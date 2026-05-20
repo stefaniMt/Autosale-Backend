@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from '../entities/customer.entity';
 import { Repository } from 'typeorm';
-import { CreateCustomerDto } from '../dto/customer.dto';
+import { CreateCustomerDto, UpdateCustomerDto } from '../dto/customer.dto';
 
 @Injectable()
 export class CustomersService {
