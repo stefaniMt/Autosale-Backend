@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { VehiclesService } from '../services/vehicles.service';
-import { CreateVehicleDto } from '../dto/vehicle.dto';
+import { CreateVehicleDto, UpdateVehicleDto } from '../dto/vehicle.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Vehicles')
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
@@ -12,7 +14,33 @@ export class VehiclesController {
   }
 
   @Post()
-  createVehicle(@Body() createVehicleDto: CreateVehicleDto) {
-    return this.vehiclesService.create(createVehicleDto);
+  create(
+    @Body() createVehicleDto: CreateVehicleDto,
+  ) {
+    return this.vehiclesService.create(
+      createVehicleDto,
+    );
+  }
+  @Get(':id')
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.vehiclesService.findOne(id);
+  }
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateVehicleDto: UpdateVehicleDto,
+  ) {
+    return this.vehiclesService.update(
+      id,
+      updateVehicleDto,
+    );
+  }
+  @Delete(':id')
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.vehiclesService.remove(id);
   }
 }

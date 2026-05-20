@@ -1,8 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateVehicleDto } from '../dto/vehicle.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vehicle } from '../entities/vehicle.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class VehiclesService {
@@ -22,7 +22,33 @@ export class VehiclesService {
     }
   }
 
-  async findAll() {
-    return this.vehicleRepository.find({});
+  async findAll(): Promise<Vehicle[]> {
+    return await this.vehicleRepository.find({});
+  }
+
+  async findOne(id: number): Promise<Vehicle> {
+    const vehicle = await this.vehicleRepository.findOne({
+      where: { id },
+      relations: ['model', 'model.brand'],
+    });
+
+    if (!vehicle) {
+      throw new NotFoundException(`Vehículo con id ${id} no encontrado`);
+    }
+
+    return vehicle;
+  }
+
+  async update(id: number, updateVehicleDto,
+    ): Promise<Vehicle> {
+    const vehicle = await this.findOne(id);
+    Object.assign(vehicle, updateVehicleDto);
+    return await this.vehicleRepository.save(vehicle);
+  }
+
+  async remove(id: number): Promise<Vehicle> {
+    const vehicle = await this.findOne(id);
+
+    return await this.vehicleRepository.softRemove(vehicle);
   }
 }
